@@ -1,0 +1,17 @@
+.btn-xs {
+    padding: 0.2rem 0.5rem;
+    font-size: 0.875rem;
+    line-height: 1;
+    border-radius: 0.2rem;
+  }
+  .modal-dialog {
+    position:relative;
+    top:auto  !important;
+    right:auto  !important;
+    left:auto !important;
+    bottom:0  !important ;
+ }  
+
+ .cp{
+  cursor: pointer !important;
+ }

@@ -1,0 +1,50 @@
+{
+    "institute_approval": {
+        "title_en": "Institute Approved",
+        "title_ar": "تم الموافقة على المعهد",
+        "msg_en": "Your Institute has been approved.",
+        "msg_ar": "تم الموافقة على معهدك."
+    },
+    "institute_rejected": {
+        "title_en": "Institute Rejected",
+        "title_ar": "تم رفض المعهد",
+        "msg_en": "Your Institute has been Rejected.",
+        "msg_ar": "تم رفض معهدك."
+    },
+    "course_approval": {
+        "title_en": "Course Approved",
+        "title_ar": "تم الموافقة على الدورة",
+        "msg_en": "Your Course has been approved.",
+        "msg_ar": "تم الموافقة على دورتك."
+    },
+    "course_rejected": {
+        "title_en": "Course Rejected",
+        "title_ar": "تم رفض الدورة",
+        "msg_en": "Your Course has been Rejected.",
+        "msg_ar": "تم رفض دورتك."
+    },
+    "order_received": {
+        "title_en": "Order Success ",
+        "title_ar": "تم استلام الطلب بنجاح",
+        "msg_en": "You received new order.",
+        "msg_ar": "لقد استلمت طلبًا جديدًا."
+    },
+    "order_failed": {
+        "title_en": "Order Failed ",
+        "title_ar": "فشل الطلب",
+        "msg_en": "You new order failed.",
+        "msg_ar": "فشل طلبك الجديد."
+    },
+    "withdraw_request_approved": {
+        "title_en": "Withdraw Request Approved. ",
+        "title_ar": "تم الموافقة على طلب السحب.",
+        "msg_en": "You request approved.",
+        "msg_ar": "تمت الموافقة على طلبك."
+    },
+    "withdraw_request_rejected": {
+        "title_en": "Withdraw Request rejected. ",
+        "title_ar": "تم رفض طلب السحب.",
+        "msg_en": "You request rejected.",
+        "msg_ar": "تم رفض طلبك."
+    }
+}
