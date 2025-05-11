@@ -190,6 +190,9 @@
                 name: `{{ __('Email') }}`,
             },
             {
+                name: `{{ __('Total Students') }}`,
+            },
+            {
                 name: `{{ __('Status') }}`,
                 width: '100px',
                 formatter: (cell, row) => {
@@ -238,6 +241,8 @@
                 name: `{{ __('Action') }}`,
                 width: '90px',
                 formatter: (cell, row) => {
+                    console.log(row,"ooooooooooooooooooooooooooooo");
+                    
                     return gridjs.html(`
                         <div class="dropdown">
                             <a class="dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -251,7 +256,7 @@
                                 </li>
                                 <li class="dropdown-item" onclick='editInstitute(this, ${cell})'>{{ __('Edit') }}</li>
                                 <li class="dropdown-item" style="cursor: pointer;" onclick='toggleStatus(${row['_cells'][0]['data']}, this)'>
-                                ${row['_cells'][3]['data'] == 1 ? '{{ __('Inactive') }}' : '{{ __('Active') }}'}
+                                ${row['_cells'][4]['data'] == 1 ? '{{ __('Inactive') }}' : '{{ __('Active') }}'}
                                 </li>
                             </ul>
                         </div>
@@ -278,7 +283,7 @@
             method: 'GET',
             then: (res) => {
                 var data = res['data'];
-                return data.map(inst => [inst.id, inst.name ? inst.name : "-", inst.email, inst.status, inst
+                return data.map(inst => [inst.id, inst.name ? inst.name : "-", inst.email,inst.student_count, inst.status, inst
                     .address, inst.id
                 ]);
             },

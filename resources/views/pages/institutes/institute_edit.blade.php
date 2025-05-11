@@ -163,7 +163,7 @@
                                     عمولة
                                     @endif
                                 </label>
-                                <input type="text" class="form-control" name="admin_commission" id="basicpill-firstname-input"
+                                <input type="number" class="form-control" name="admin_commission" id="basicpill-firstname-input"
                                     placeholder="{{ __('Commission') }}"
                                     value="{{ $institute->admin_commission }}">
                                 <div class="text-danger" id="name">
@@ -173,6 +173,44 @@
                             </div>
                         </div><!-- end col -->
                     </div>
+
+
+<div class="row">
+    <div class="col-lg-6">
+        <div class="mb-3">
+            <label for="verification-document" class="form-label fw-semibold">
+                @if (session('page_lang') === 'en')
+                    Upload Verification Document
+                @elseif (session('page_lang') === 'ar')
+                    تحميل مستند التحقق
+                @endif
+            </label>
+
+            <!-- File input -->
+            <input type="file" class="form-control" name="document" id="verification-document" 
+                   accept=".pdf, .doc, .docx, .jpg, .jpeg, .png">
+            <div class="text-danger mt-1" id="verification_document_error"></div>
+
+            <!-- Document Preview Area -->
+            <div class="mt-3" id="document-preview">
+                @if(!empty($institute->document))
+                    @php
+                        $ext = pathinfo($institute->document, PATHINFO_EXTENSION);
+                    @endphp
+                    @if(in_array(strtolower($ext), ['jpg', 'jpeg', 'png']))
+                        <img src="{{ asset('storage/' . $institute->document) }}" 
+                             alt="Uploaded Document" class="img-thumbnail" style="max-height: 150px;">
+                    @else
+                        <a href="{{ asset('storage/' . $institute->document) }}" 
+                           target="_blank" class="btn btn-outline-primary btn-sm">
+                            View Document
+                        </a>
+                    @endif
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
 
             </div>
             <div class="card-header">
@@ -351,6 +389,16 @@
         formData.append('latitute', window.lng_s);
         formData.append('_method', 'PUT');
 
+           // Append the uploaded file to FormData
+           var verificationDocument = $('#verification-document')[0].files[0];
+
+            if (verificationDocument) {
+                formData.append('document', verificationDocument);
+            }
+
+            console.log(formData,"formDataformDataformDataformData");
+            
+
         $.ajax({
             url: updateURL,
             type: 'POST',
@@ -484,5 +532,32 @@
         })
 
     }
+
+
+    document.getElementById('verification-document').addEventListener('change', function (event) {
+    const preview = document.getElementById('document-preview');
+    const file = event.target.files[0];
+    preview.innerHTML = ''; // Clear current preview
+
+    if (file) {
+        const fileType = file.type;
+
+        if (fileType.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.className = 'img-thumbnail';
+                img.style.maxHeight = '150px';
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            const fileInfo = document.createElement('div');
+            fileInfo.innerHTML = `<span class="text-secondary"><strong>Selected File:</strong> ${file.name}</span>`;
+            preview.appendChild(fileInfo);
+        }
+    }
+});
 </script>
 @endsection

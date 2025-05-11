@@ -15,6 +15,7 @@ use App\Models\notifications\Notification;
 use App\Models\app_settings\PushNotification;
 use App\Models\payments\Wallet;
 use App\Models\institutes\InstituteRating;
+use App\Models\Order;
 
 class Institute extends Authenticatable
 {
@@ -100,5 +101,9 @@ class Institute extends Authenticatable
     public function notifiable()
     {
         return $this->morphTo();
+    }
+    public function orders()
+    {
+        return $this->hasMany(Order::class, 'institute_id');
     }
 }

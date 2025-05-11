@@ -51,6 +51,12 @@
 
 
 
+
+
+</div><!-- end row -->
+
+
+
     <!-- Modal -->
     <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
         aria-hidden="true">
@@ -89,7 +95,7 @@
                                         <select class="form-control" data-trigger name="stat" id="stat">
                                             <option value="" disabled>{{ __('Please Select Status') }} </option>
                                             <option value="1" selected> {{ __('Active') }} </option>
-                                            <option value="0"> {{ __('Blocked') }}</option>
+                                            <option value="0"> {{ __('Inactive') }}</option>
 
 
                                         </select>
@@ -126,8 +132,6 @@
     </div>
 
 
-</div><!-- end row -->
-
 @endsection
 
 @section('script')
@@ -155,8 +159,25 @@
             },
             {
                 name: 'Name',
+            },
+            {
+                name: 'Icon',
+                formatter: (cell) => {
+                    if (!cell) {
+                        return gridjs.html(
+                            `<div style="color: red; font-size: 12px;">Image not available</div>`
+                        );
+                    }
 
-
+                    return gridjs.html(
+                        `<img 
+                            src="/storage/${cell}" 
+                            alt="Icon" 
+                            style="height: 80px; width: 80px; border-radius: 12px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.15);" 
+                            onerror="this.style.display='none'; this.insertAdjacentHTML('afterend', '<div style=\\'color:red; font-size:12px;\\'>Image not found</div>')"
+                        />`
+                    );
+                }
             },
             {
                 name: 'Status',
@@ -168,7 +189,7 @@
                         )
                     } else if (cell == 0) {
                         return gridjs.html(
-                            `<span class="badge rounded-pill badge-soft-danger" data-key="t-hot">{{ __('Blocked') }}  </span>`
+                            `<span class="badge rounded-pill badge-soft-danger" data-key="t-hot">{{ __('Inactive') }}  </span>`
                         )
 
 
@@ -195,7 +216,9 @@
 
                                         <ul class="dropdown-menu dropdown-menu-end">
                                             <li class=" cp dropdown-item "  onclick='edit(this, ${cell})' >Edit </li>
-                                            
+                                               <li class="dropdown-item" style="cursor: pointer;" onclick='toggleStatus(${row['_cells'][0]['data']}, this, ${row['_cells'][3]['data']})'>
+                                ${row['_cells'][3]['data'] == 1 ? '{{ __('Inactive') }}' : '{{ __('Active') }}'}
+                                </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -227,7 +250,7 @@
             method: 'GET',
             then: (res) => {
                 var data = res['data'];
-                return data.map(inst => [inst.id, inst.name ? inst.name : "-", inst.status, inst.id]);
+                return data.map(inst => [inst.id, inst.name ? inst.name : "-", inst.icon, inst.status, inst.id]);
             },
             handle: (res) => {
                 console.log(res)
@@ -267,6 +290,7 @@
                     alert(res.message);
                     $("#AddFormSubmit")[0].reset();
                     e.disabled = false;
+                    location.reload(); 
                 } else {
                     alert(res.message);
                     e.disabled = false;
@@ -302,6 +326,7 @@
                     alert(res.message);
                     $("#AddFormSubmit")[0].reset();
                     e.disabled = false;
+                    location.reload(); 
                 } else {
                     alert(res.message);
                     e.disabled = false;
@@ -336,5 +361,51 @@
         })
 
     }
+
+
+    function toggleStatus(id, element, status) {
+        console.log(element,"elementelementelement")
+    const confirmationMessage = `{{ __('Are you sure you want to toggle the status of this category?') }}`;
+    if (!confirm(confirmationMessage)) {
+        return;
+    }
+        var formData = new FormData();
+        formData.append('status', +(!status));
+    
+        var url = `${addURL}/${id}`;
+    $.ajax({
+        url: url,
+        type: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function (res) {
+            if (res.code === 200) {
+                alert(res.message);
+
+                // Update the dropdown text dynamically
+                const dropdownItem = $(element);
+                const currentText = dropdownItem.text().trim();
+
+                if (currentText === '{{ __('Inactive') }}') {
+                    dropdownItem.text('{{ __('Activate') }}');
+                    // Update the status badge dynamically
+                    $(element).closest('tr').find('.badge').removeClass('badge-soft-success').addClass('badge-soft-danger').text('{{ __('Inactive') }}');
+                } else {
+                    dropdownItem.text('{{ __('Inactive') }}');
+                    // Update the status badge dynamically
+                    $(element).closest('tr').find('.badge').removeClass('badge-soft-danger').addClass('badge-soft-success').text('{{ __('Active') }}');
+                }
+            } else {
+                alert(res.message);
+            }
+        },
+        error: function () {
+            alert('{{ __('An error occurred while updating the status.') }}');
+        }
+    });
+}
 </script>
 @endsection
+
+

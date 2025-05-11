@@ -239,7 +239,7 @@
                                             <li class=" cp dropdown-item " onclick="redirectCoursePage(this,'${cell}')"  >{{ __('View') }} </li>
                                             <li class=" cp dropdown-item " onclick="redirectCourseEditPage(this,'${cell}')">{{ __('Edit') }} </li>
                                             <li class=" cp dropdown-item " onclick="viewDocument(this,'${cell}')">{{ __('Document') }} </li>
-                                            <li class=" cp dropdown-item " onclick="updateCourseStatus(this,'${cell}',1 , ${row._cells[0].data})">{{ __('Approve') }} </li>
+                                            <li class=" cp dropdown-item " onclick="updateCourseStatus(this,'${cell}',1 , ${row._cells[0].data})">{{ __('Active') }} </li>
                                             <li class=" cp dropdown-item "  data-toggle="modal" data-target="#reasonMDL" onclick="updateCourseStatus(this,'${cell}',-1, ${row._cells[0].data})">{{ __('Reject') }} </li>
                                            
                                             
@@ -415,6 +415,7 @@
                     console.log(res)
                     if (res['code'] == 200) {
                         alert(res.message)
+                        window.location.reload();
                         return;
                     } else {
                         alert(res.message)

@@ -37,7 +37,14 @@ class ApiInstituteController extends Controller
         $res = [];
         $res['code'] = 200;
         $res['message'] = "Institutes Fetched Successfully.";
-        $res['data'] =  Institute::with(['country', 'state', 'city'])->orderBy('created_at', 'desc')->get();
+        $res['data'] = Institute::with(['country', 'state', 'city'])
+    ->withCount([
+        'orders as student_count' => function ($query) {
+            $query->select(DB::raw("COUNT(DISTINCT student_id)"));
+        }
+    ])
+    ->orderBy('created_at', 'desc')
+    ->get();
         return $res;
     }
 
@@ -182,10 +189,29 @@ class ApiInstituteController extends Controller
 
                // Check For Document  
                 if ($req->hasFile('document')) {
-                    $document_path = $req->file('document')->store('institutes', 'public');
-                    // dd($document_path);
+                    $file = $req->file('document');
+
+                    // Optional: Validate file type
+                    $req->validate([
+                        'document' => 'file|mimes:jpeg,jpg,png,pdf,doc,docx|max:20480', // max 20MB
+                    ]);
+
+                    // Get original extension
+                    $extension = $file->getClientOriginalExtension();
+
+                    // Generate unique filename with extension
+                    $filename = uniqid() . '.' . $extension;
+
+                    // Store the file in public/institutes
+                    $document_path = $file->storeAs('institutes', $filename, 'public');
+
+                    // Debug uploaded file (optional)
+                    // dd($file, $document_path);
+
+                    // Save to database
                     $institute->document = $document_path;
                 }
+
 // 
                 // Check For Cover  
                 if ($req->hasFile('cover')) {
@@ -411,22 +437,40 @@ class ApiInstituteController extends Controller
                     return $res;
                 }
 
-                if ($req->hasFile('document')) {
-                    $document_path = $req->file('document')->store('institutes');
+                // if ($req->hasFile('document')) {
+                //     $document_path = $req->file('document')->store('institutes');
+                //     $institute->document = $document_path;
+                //     $institute->save();
+                // }
+                   // Check For Document  
+                   if ($req->hasFile('document')) {
+                    $file = $req->file('document');
+
+                    // Optional: Validate file type
+                    $req->validate([
+                        'document' => 'file|mimes:jpeg,jpg,png,pdf,doc,docx|max:20480', // max 20MB
+                    ]);
+
+                    // Get original extension
+                    $extension = $file->getClientOriginalExtension();
+
+                    // Generate unique filename with extension
+                    $filename = uniqid() . '.' . $extension;
+
+                    // Store the file in public/institutes
+                    $document_path = $file->storeAs('institutes', $filename, 'public');
+                    // Save to database
                     $institute->document = $document_path;
-                    $institute->save();
                 }
                 if ($req->hasFile('logo')) {
                     $document_path = $req->file('logo')->store('institutes');
                     $institute->logo = $document_path;
-                    $institute->save();
                 }
                 if ($req->hasFile('cover')) {
                     $document_path = $req->file('cover')->store('institutes');
                     $institute->cover = $document_path;
-                    $institute->save();
                 }
-
+                $institute->save();
                 return $res;
             } catch (\Exception $e) {
                 $message = "Server Error! " . $e->getMessage();

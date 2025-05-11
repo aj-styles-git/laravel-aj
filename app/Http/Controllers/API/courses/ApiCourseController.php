@@ -129,7 +129,9 @@ class ApiCourseController extends Controller
                 $course->start_date = $startDateTime;
                 $course->end_date = $endDateTime;
                 $course->course_type = (int)$req->course_type;
-    
+                // if (isset($req->total_seats)) {
+                //     $course->total_seats = $req->total_seats;
+                // }
                 if (isset($req->seats)) {
                     $course->seats = $req->seats;
                 }
@@ -391,13 +393,13 @@ class ApiCourseController extends Controller
 
             if (isset($req->start_date)) {
 
-                $startDateTime = Carbon::createFromFormat('Y-m-d H:i', $req->start_date);
+                $startDateTime = Carbon::createFromFormat('Y-m-d', $req->start_date);
                 $req->merge(['start_date' => $startDateTime]);
             }
 
             if (isset($req->end_date)) {
 
-                $endDateTime = Carbon::createFromFormat('Y-m-d H:i', $req->end_date);
+                $endDateTime = Carbon::createFromFormat('Y-m-d', $req->end_date);
                 $req->merge(['end_date' => $endDateTime]);
             }
 
@@ -421,7 +423,9 @@ class ApiCourseController extends Controller
                 if ($req->has('status')) {
                     $this->notify($course->institute_id, $req->status);
                 }
-
+                if (isset($req->class_time)) { // Correctly handle class_time
+                    $course->timing = $req->class_time;
+                }
                 $course->update($req->all());
 
                 if ($req->hasFile('thumbnail')) {
@@ -450,7 +454,9 @@ class ApiCourseController extends Controller
                     $document_path = $req->file('thumbnail')->store('institutes');
                     $course->thumbnail = $document_path;
                 }
-
+                if (isset($req->class_time)) { // Correctly handle class_time
+                    $course->timing = $req->class_time;
+                }
                 $course->save();
 
                 $res['message'] = "Course Created Successfully with diffenet language.";
@@ -659,12 +665,35 @@ class ApiCourseController extends Controller
                 return $res;
             }
         } else {
-            $res['message'] = "Please send lang.";
-            $res['code'] = 500;
-            return $res;
+            // $res['message'] = "Please send lang.";
+            // $res['code'] = 500;
+            // return $res;
+
+            $cat->name = $req->name;
+            $cat->name_en = $req->name;
         }
 
+        // Check For Image  
+        if ($req->hasFile('icon')) {
+            $file = $req->file('icon');
 
+            // ✅ Only validate image files (no PDF, DOC, DOCX)
+            $req->validate([
+                'icon' => 'image|mimes:jpeg,jpg,png|max:20480', // max 20MB
+            ]);
+
+            // Get original extension
+            $extension = $file->getClientOriginalExtension();
+
+            // Generate unique filename with extension
+            $filename = uniqid() . '.' . $extension;
+
+            // Store the file in public/institutes
+            $document_path = $file->storeAs('courses', $filename, 'public');
+
+            // Save to database
+            $cat->icon = $document_path;
+        }
 
         $cat->status = isset($req->status) ? $req->status : 1;
 
@@ -695,7 +724,27 @@ class ApiCourseController extends Controller
         try {
 
             if ($cat) {
+                // Check For Image  
+                if ($req->hasFile('icon')) {
+                    $file = $req->file('icon');
 
+                    // ✅ Only validate image files (no PDF, DOC, DOCX)
+                    $req->validate([
+                        'icon' => 'image|mimes:jpeg,jpg,png|max:20480', // max 20MB
+                    ]);
+
+                    // Get original extension
+                    $extension = $file->getClientOriginalExtension();
+
+                    // Generate unique filename with extension
+                    $filename = uniqid() . '.' . $extension;
+
+                    // Store the file in public/institutes
+                    $document_path = $file->storeAs('courses', $filename, 'public');
+
+                    // Save to database
+                    $cat->icon = $document_path;
+                }
                 $cat->update($req->all());
                 $res['code'] = 200;
                 $res['message'] = " Admin Updated Successfully.";

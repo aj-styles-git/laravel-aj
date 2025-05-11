@@ -241,10 +241,22 @@
 
 
                                 </select>
+
+                                                              
+                                <div class="mb-3">
+                                    <label class="form-label font-size-13 text-muted">
+                                        @if (session('page_lang') === 'en')
+                                            Total Seats
+                                        @elseif (session('page_lang') === 'ar')
+                                            إجمالي المقاعد
+                                        @endif
+                                    </label>
+                                    <input type="number" name="seats" class="form-control" placeholder="Enter total seats">
+                                </div>
                             </div>
                         </div>
 
-                        <div class="col-lg-6 " id="seatsDiv">
+                        <!-- <div class="col-lg-6 " id="seatsDiv">
                             <div class="mb-3">
                                 <label for="basicpill-firstname-input" class="form-label">
 
@@ -261,7 +273,7 @@
                                 </div>
 
                             </div>
-                        </div>
+                        </div> -->
 
 
 
@@ -474,8 +486,9 @@
         var specified_for = $('select[name=specified_for]').val();
         var institute_id = $('select[name=institute_id]').val();
         var category_id = $('select[name=category_id]').val();
-        var start_date = $('#start_date').val();;
-        var end_date = $('#end_date').val();;
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+        var class_time = $('#class_time').val();
         formData.append('lang', lang);
         formData.append('course_type', course_type);
         formData.append('specified_for', specified_for);
@@ -483,6 +496,7 @@
         formData.append('institute_id', institute_id);
         formData.append('category_id', category_id);
         formData.append('end_date', end_date);
+        formData.append('class_time', class_time);
 
 
         $.ajax({

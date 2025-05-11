@@ -38,6 +38,15 @@
         @endslot
     @endcomponent
 @endsection
+
+@php
+    $options = [
+        'male' => ['en' => 'Male', 'ar' => 'ذكر'],
+        'female' => ['en' => 'Female', 'ar' => 'أنثى'],
+        'both' => ['en' => 'Both', 'ar' => 'كلاهما']
+    ];
+    $lang = session('page_lang') ?? 'en';
+@endphp
 <div class="row">
     <div class="col-lg-12">
         <div class="card">
@@ -108,7 +117,7 @@
                                     @endif
                                 </label>
                                 <input type="text" class="form-control" name="title" id="basicpill-firstname-input"
-                                    placeholder="Title " value="{{ $course->title ?? "" }}">
+                                    placeholder="Title " value="{{ $course->title ?? '' }}">
                                 <div class="text-danger" id="title">
 
                                 </div>
@@ -226,7 +235,39 @@
                             </div>
                         </div>
 
+                        <div class="col-lg-6">
+                            <div class="mb-3">
+                                <label for="choices-single-default" class="form-label font-size-13 text-muted">
+                                    @if (session('page_lang') === 'en')
+                                        Specified for
+                                    @elseif (session('page_lang') === 'ar')
+                                        محدد ل
+                                    @endif
+                                </label>
+                                <div class="text-danger" id="specified_for">
 
+                                </div>
+                                <select class="form-control" name="specified_for">
+    @foreach($options as $value => $labels)
+        <option value="{{ $value }}" {{ $course->specified_for === $value ? 'selected' : '' }}>
+            {{ $labels[$lang] }}
+        </option>
+    @endforeach
+</select>
+
+                                                              
+                                <div class="mb-3">
+                                    <label class="form-label font-size-13 text-muted">
+                                        @if (session('page_lang') === 'en')
+                                            Total Seats
+                                        @elseif (session('page_lang') === 'ar')
+                                            إجمالي المقاعد
+                                        @endif
+                                    </label>
+                                    <input type="number" name="seats" value="{{ $course->seats ?? 0 }}" class="form-control" placeholder="Enter total seats">
+                                </div>
+                            </div>
+                        </div>
 
                         <div class="col-lg-6 ">
                             <div class="mb-3">
@@ -305,7 +346,7 @@
                                     @endif
                                 </label>
                                 <input type="text" class="form-control" id="start_date"
-                                    value="{{ $course->start_date ?? "" }}">
+                                    value="{{ $course->start_date ?? '' }}">
                             </div>
                         </div>
                         <div class="col-lg-6 p-1">
@@ -324,7 +365,19 @@
                             </div>
                         </div>
 
-
+       <!-- Add For class time input -->
+       <div class="col-lg-6 p-1">
+                            <div class="mb-3">
+                                <label class="form-label">
+                                    @if (session('page_lang') === 'en')
+                                        Class Time
+                                    @else
+                                        وقت الحصة
+                                    @endif
+                                </label>
+                                <input type="text" class="form-control" id="class_time"  value="{{ $course->class_time ?? '' }} name="class_time">
+                            </div>
+                        </div>
 
                         <div class="row">
                             <div class="col-lg-2">
@@ -373,17 +426,22 @@
 
     flatpickr('#start_date', {
         enableTime: true,
-        dateFormat: "Y-m-d H:i"
+        dateFormat: "Y-m-d"
     });
 
 
     flatpickr('#end_date', {
         enableTime: true,
-        dateFormat: "Y-m-d H:i"
+        dateFormat: "Y-m-d"
     });
 
 
-
+    flatpickr('#class_time', {
+    enableTime: true,
+    noCalendar: true,
+    dateFormat: "h:i K", // 12-hour format with AM/PM
+    time_24hr: false // Change to true for 24-hour format
+});
 
 
     function addData(e) {
@@ -405,13 +463,15 @@
         console.log(lang , " This is the lang man ")
         var course_type = $('select[name=course_type]').val();
         var category_id = $('select[name=category_id]').val();
-        var start_date = $('#start_date').val();;
-        var end_date = $('#end_date').val();;
+        var start_date = $('#start_date').val();
+        var end_date = $('#end_date').val();
+        var class_time = $('#class_time').val();
         formData.append('lang', lang);
         formData.append('course_type', course_type);
         formData.append('start_date', start_date);
         formData.append('category_id', category_id);
         formData.append('end_date', end_date);
+        formData.append('class_time', class_time);
         formData.append('_method', 'PUT');
 
 

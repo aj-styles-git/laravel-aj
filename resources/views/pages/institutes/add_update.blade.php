@@ -164,7 +164,7 @@
                                     عمولة
                                     @endif
                                 </label>
-                                <input type="text" class="form-control" name="admin_commission" id="basicpill-firstname-input"
+                                <input type="number" class="form-control" name="admin_commission" id="basicpill-firstname-input"
                                     placeholder="@if (session('page_lang') === 'en')Commission  @elseif (session('page_lang') === 'ar')  عمولة  @endif"
                                     >
                                 <div class="text-danger" id="name">
@@ -382,8 +382,9 @@
         formData.append('latitute', window.lng_s);
         // Append the uploaded file to FormData
         var verificationDocument = $('#verification-document')[0].files[0];
+
         if (verificationDocument) {
-            formData.append('verification_document', verificationDocument);
+            formData.append('document', verificationDocument);
         }
         $.ajax({
             url: updateURL,
